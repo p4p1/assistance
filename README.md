@@ -1,6 +1,35 @@
 # assistance
-:open_file_folder: A shell script suite to install all of the things with a nice
-environement.
+A shell script project to call other shell scripts automatically and do what you
+want. Currently made for the school dev&go and calls installation scripts. This
+project can be changed to whatever :)
+
+## Tutorial:
+
+To add new scripts to this project you need to create a .sh file inside of the
+src folder. All of the files in the src folder will be sourced to the main
+script. Every scripts need to start by sourcing the vars.sh file that is located
+in /opt/problem/data/.
+
+##### example_script.sh
+``` bash
+source /opt/problem/data/vars.sh
+
+echo -n "Please enter your name: "
+read name
+echo "Hello $name"
+```
+
+## Usage:
+``` bash
+Description:
+    New to linux? no worries, this tool helps you correct a few bugs
+    here and there to help you have a stable working environement.
+Usage:
+    ./problem.sh
+    ./problem.sh -b         # Show a banner
+    ./problem.sh -i         # Install this software
+Made by p4p1
+```
 
 ## Tree:
 ``` bash
