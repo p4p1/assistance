@@ -3,6 +3,12 @@ A shell script project to call other shell scripts automatically and do what you
 want. Currently made for the school dev&go and calls installation scripts. This
 project can be changed to whatever :)
 
+## Installation:
+``` bash
+git clone git@github.com:p4p1/assistance.git
+cd assistance/ ; chmod +x ./problem.sh ; ./problem.sh -i
+```
+
 ## Tutorial:
 
 To add new scripts to this project you need to create a .sh file inside of the
