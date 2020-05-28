@@ -19,9 +19,9 @@
 #
 # Usage:
 #  Students:
-#    ./problem.sh
-#    ./problem.sh -b    # Show a banner
-#    ./problem.sh -i    # Install this software
+#    ./assistance.sh
+#    ./assistance.sh -b    # Show a banner
+#    ./assistance.sh -i    # Install this software
 #  Teachers:
 #   To add new questions just follow those simple instructions, 1: add a
 #   question to the question variable. 2: create the function. 3: add an entry
@@ -32,10 +32,10 @@ DIALOG_RC="use_shadow = ON\nuse_colors = ON\nscreen_color = (RED,BLACK,ON)\nshad
 # Important variables
 WIDTH=80
 HEIGHT=30
-INSTALL_DIR=/opt/problem
+INSTALL_DIR=/opt/assistance
 dependencies=(dialog tree ssh git curl)
 question=("1" "What is this?")
-scripts=($(ls $INSTALL_DIR/src/))
+scripts=($(ls $INSTALL_DIR/src/ 2> /dev/null))
 
 
 function usage() {

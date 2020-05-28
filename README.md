@@ -1,20 +1,19 @@
 # assistance
-A shell script project to call other shell scripts automatically and do what you
-want. Currently made for the school dev&go and calls installation scripts. This
-project can be changed to whatever :)
+A shell script framework so assist you in managing all of your scripts
 
 ## Installation:
 ``` bash
 git clone git@github.com:p4p1/assistance.git
-cd assistance/ ; chmod +x ./problem.sh ; ./problem.sh -i
+cd assistance/ ; chmod +x ./assistance.sh ; ./assistance.sh -i
 ```
 
 ## Tutorial:
-
 To add new scripts to this project you need to create a .sh file inside of the
 src folder. All of the files in the src folder will be sourced to the main
 script. Every scripts need to start by sourcing the vars.sh file that is located
 in /opt/problem/data/.
+Files need to be name in this case: file_name_is_this.sh. This script will take
+the file name and set it like so in the prompt: file name is this ?.
 
 ##### example_script.sh
 ``` bash
@@ -50,9 +49,10 @@ assistance/
 │   ├── packages.txt    # list of the packages
 │   └── vars.sh         # global variables for the scripts
 |
-├── problem.sh          # Main script of this folder
+├── assistance.sh       # Main script of this folder
 ├── README.md           # this file
 |
 └── src/            # Folder with the scripts to be executed
     └── ....        # add your scripts in this folder
 ```
+

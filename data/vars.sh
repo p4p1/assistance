@@ -10,6 +10,6 @@
 # Description:
 #  Global variables for problem
 
-INSTALL_DIR=/opt/problem
+INSTALL_DIR=/opt/assistance
 SCRIPT_DIR=$INSTALL_DIR/src
 DATA_DIR=$INSTALL_DIR/data

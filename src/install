@@ -1,0 +1,272 @@
+#!/bin/bash
+# install.sh
+# Created on: Fri, 27 March 2020
+# https://p4p1.github.io/#config
+#  ____   __  ____  __
+# (  _ \ /. |(  _ \/  )
+#  )___/(_  _))___/ )(
+# (__)    (_)(__)  (__)
+#
+# Description:
+#  Installation script to install and configure the softwares I used the
+#  most. I also propose a list of packages for different working environements.
+#
+# Usage:
+#  ./install.sh -u $(whoami) # basic installation
+#  ./install.sh -u $(whoami) -a # install all
+#  ./install.sh -u $(whoami) -p # basic installation w/ programming tools
+#  ./install.sh -u $(whoami) -s # basic installation w/ pentesting tools
+
+source /opt/assistance/data/vars.sh
+
+# dmenu settings:
+L_NO="5"
+L_HEIGHT="25"
+BG_COLOR="#222222"
+FG_COLOR="#bbbbbb"
+SBG_COLOR="#ff9d14"
+SFG_COLOR="#222222"
+BRD_WIDTH="5"
+
+# versions
+DWM_VERSION=6.2
+ST_VERSION=0.8.2
+
+# wrapper assistance
+defaults=($(cat $DATA_DIR/packages.txt | tr "\n" " "))
+programming=($(cat $DATA_DIR/packages_programming.txt | tr "\n" " "))
+pentest=($(cat $DATA_DIR/packages_programming.txt | tr "\n" " "))
+# values for install
+#defaults=(vim emacs tmux git openvpn tor ssh docker-compose curl net-tools tar adb fastboot gparted neofetch nmap thefuck feh compton libx11-dev libxinerama-dev libxft-dev gcc make gcc i3lock vifm irssi tig imagemagick blueman)
+#programming=(npm python2 python3 gcc valgrind g++ nasm php nodejs python-pip python3-pip clang gdb ghc mingw-w64 fritzing arduino audacity xserver-xephyr golang-go)
+#pentest=(aircrack-ng fping exiftool radare2 nikto hydra wireshark dfu-programmer dfu-util whois proxychains traceroute smbclient hashcat sqlmap binwalk steghide)
+webbrowser="https://vivaldi.com/download/"
+config="https:/p4p1.github.io/backup.tar.xz"
+
+# values for arguments
+p=false
+s=false
+a=false
+
+# Usage
+function usage () {
+	echo -e "\e[1;31mUsage:\e[m" 1>&2
+	echo "$0 -b -> Base install" 1>&2
+	echo "$0 -u \$(whoami) -> default install" 1>&2
+	echo "$0 -u \$(whoami) -p -> programming install" 1>&2
+	echo "$0 -u \$(whoami) -s -> pentest install" 1>&2
+	echo "$0 -u \$(whoami) -a -> programming and pentest install" 1>&2
+	echo "$0 -u \$(whoami) -c -> Change bash config file" 1>&2
+	exit 84
+}
+
+function install_dwm_st() {
+	SAVED_PWD=$(pwd)
+	WD=/home/$1/.source
+	SOURCES=($(ls $WD))
+
+	echo "Installing source projects"
+	for item in ${SOURCES[*]}; do
+		FILE=$WD/$item
+		if [ -d "$FILE" ]; then
+			cd $FILE
+			echo -n "Running make install on $item -> "
+			make install &> /dev/null && echo -e "\e[1;34m:)\e[m" ||
+				echo -e "\e[1;31m:(\e[m"
+		fi
+	done
+	cd $SAVED_PWD
+}
+
+function emacs_conf() {
+	echo -e "Downloading \e[1;31mspacemacs\e[m..."
+	su $1 -c "git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d"
+}
+
+# function to install different packages
+function package_install() {
+	for item in $@; do
+		echo -n "Checking $item -> "
+		if hash $item &> /dev/null; then
+			echo -e "\e[1;34m:)\e[m"
+		else
+			echo -e "\e[1;31m:(\e[m"
+			apt install -y $item
+		fi
+	done
+}
+
+# function to install the default webbrowser
+function webbrowser_install() {
+	echo -e "Download vivaldi in the \e[1;31msame\e[m directory as this script..."
+	echo $(pwd)
+	su $1 -c "firefox '$webbrowser'"
+
+	apt install -y ./vivaldi*
+}
+
+# function to install my config files
+function config_install() {
+	curl $config --output ./backup.tar.xz
+	tar xf ./backup.tar.xz
+
+	for item in $(ls -a ./backup/ | sed 1,2d); do
+		echo -e "\e[1;34mAdding\e[m $item in /home/$1/ directory"
+		[ -f /home/$1/$item ] && rm -rf /home/$1/$item
+		[ -d /home/$1/$item ] && rm -rf /home/$1/$item
+		cp -r ./backup/$item /home/$1/$item
+		chown $1 -R /home/$1/$item
+	done
+	rm -rf ./backup.tar.xz
+	rm -rf ./backup/
+}
+
+# function to choose bash config
+function pick_bashrc() {
+	VAL=$(echo -e "My bashrc\nKali linux\nParrot OS\nUbuntu" | dmenu -nb \
+		$BG_COLOR -nf $FG_COLOR -sb $SBG_COLOR -sf $SFG_COLOR -c -bw \
+		$BRD_WIDTH -h $L_HEIGHT -l $L_NO)
+
+	if [ "$VAL" = "Kali linux" ]; then
+		cp -r /home/$1/.bash_configs/.bashrc_kali /home/$1/.bashrc
+	elif [ "$VAL" = "Parrot OS" ]; then
+		cp -r /home/$1/.bash_configs/.bashrc_parot /home/$1/.bashrc
+	elif [ "$VAL" = "Ubuntu" ]; then
+		cp -r /home/$1/.bash_configs/.bashrc_ubuntu /home/$1/.bashrc
+	fi
+	chown $1 /home/$1/.bashrc
+}
+
+# Command parser
+while getopts "u::psac" o; do
+	case "${o}" in
+		u)
+			u=${OPTARG}
+			;;
+		p)
+			p=true
+			;;
+		s)
+			s=true
+			;;
+		a)
+			a=true
+			;;
+		c)
+			[ -z "${u}" ] && usage
+			pick_bashrc $u
+			install_dwm_st $u
+			exit 0
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+shift $((OPTIND-1))
+if [ -z "${u}" ]; then
+	echo -n "Please enter your username: "
+	read u
+	while true; do
+		echo -n "Installation type (p: proramming/s: pentesting/a: all): "
+		read tmp
+		case "${tmp}" in
+			p)
+				p=true
+				break
+				;;
+			s)
+				s=true
+				break
+				;;
+			a)
+				a=true
+				break
+				;;
+			*)
+				echo "Unknown command: $tmp"
+				;;
+		esac
+	done
+
+fi
+
+# Do the basic checks to see if root and on supported systems and if the user exitsts
+if [ "$EUID" -ne 0 ]; then
+	echo -e "\e[1;31mPlease run as root\e[m"
+	exit 84
+fi
+if [ ! -d /home/$1 ]; then
+	echo -e "\e[1;31mError: /home/$1. Folder not found!\e[m"
+	exit 84
+fi
+
+# beginning of script
+echo "Installing Leo's Stuff :)"
+
+apt update
+apt -y upgrade
+
+package_install ${defaults[*]}
+if $a; then
+	package_install ${programming[*]}
+	package_install ${pentest[*]}
+elif $p; then
+	package_install ${programming[*]}
+elif $s; then
+	package_install ${pentest[*]}
+fi
+
+webbrowser_install $u
+
+config_install $u
+
+echo "Now run PlugInstall in vim"
+echo "Press [Enter]"
+read a
+su $u -c "vim /home/$u/.vimrc"
+
+echo -n "Checking for shh key -> "
+if [ -f /home/$u/.ssh/id_rsa.pub -a -f /home/$u/.ssh/id_rsa ]; then
+	echo -e "\e[1;34m:)\e[m"
+else
+	echo -e "\e[1;31m:(\e[m"
+	su $u -c "ssh-keygen"
+fi
+
+install_dwm_st $u
+
+pick_bashrc $u
+
+emacs_conf $u
+
+OS=$(neofetch | grep "OS" | awk -F":" '{print $2}' | awk -F' ' '{print $2}')
+if [ "$OS" = "Ubuntu" ]; then
+	# Desktop entry for dwm
+	echo "[Desktop Entry]" > /usr/share/xsessions/dwm.desktop
+	echo "Encoding=UTF-8" >> /usr/share/xsessions/dwm.desktop
+	echo "Name=Dwm" >> /usr/share/xsessions/dwm.desktop
+	echo "Comment=Dynamic window manager" >> /usr/share/xsessions/dwm.desktop
+	echo "Exec=$(whereis dwm | cut -d ":" -f2 | cut -c 2-)" >> /usr/share/xsessions/dwm.desktop
+	echo "Type=XSession" >> /usr/share/xsessions/dwm.desktop
+
+	# Touchpad config for ubuntu
+	[ ! -d /etc/X11/xorg.conf.d ] && mkdir -p /etc/X11/xorg.conf.d
+	echo -e "Section \"InputClass\"" > /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "\tIdentifier \"touchpad\"" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "\tMatchIsTouchpad \"on\"" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "\tDriver \"libinput\"" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "\tOption \"Tapping\" \"on\"" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "\tOption \"TappingButtonMap\" \"lrm\"" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "\tOption \"ScrollMethod\" \"twofinger\"" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+	echo -e "EndSection" >> /etc/X11/xorg.conf.d/90-touchpad.conf
+
+	# Fix for audio
+	rm -rf /home/$u/.config/pulse
+	su $u -c "pulseaudio -k"
+	alsa force-reload
+fi
+
+[ ! -f /home/$u/.xinitrc ] && echo "exec dwm" > /home/$u/.xinitrc
+
+echo "All done :)"
