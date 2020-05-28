@@ -1,0 +1,13 @@
+ssh
+git
+curl
+php
+nodejs
+npm
+build-essentials
+vim
+emacs
+libbz2-dev
+tig
+tmux
+tilix
