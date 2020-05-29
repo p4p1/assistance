@@ -1,5 +1,6 @@
 # assistance
-A shell script framework so assist you in managing all of your scripts
+A shell script framework so assist you in managing all of your scripts. This is
+currently filled in with my configs shell scripts
 
 ## Installation:
 ``` bash
@@ -11,13 +12,14 @@ cd assistance/ ; chmod +x ./assistance.sh ; ./assistance.sh -i
 To add new scripts to this project you need to create a .sh file inside of the
 src folder. All of the files in the src folder will be sourced to the main
 script. Every scripts need to start by sourcing the vars.sh file that is located
-in /opt/problem/data/.
+in /opt/assistance/data/.
 Files need to be name in this case: file_name_is_this.sh. This script will take
 the file name and set it like so in the prompt: file name is this ?.
 
 ##### example_script.sh
 ``` bash
-source /opt/problem/data/vars.sh
+# file_name.sh
+source /opt/assistance/data/vars.sh
 
 echo -n "Please enter your name: "
 read name
@@ -27,12 +29,12 @@ echo "Hello $name"
 ## Usage:
 ``` bash
 Description:
-    New to linux? no worries, this tool helps you correct a few bugs
-    here and there to help you have a stable working environement.
+    Need to work with a lot of shell scripts? Assistances is a framework to
+    manage your shell scripts in a nice environement.
 Usage:
-    ./problem.sh
-    ./problem.sh -b         # Show a banner
-    ./problem.sh -i         # Install this software
+    ./assistance.sh
+    ./assistance.sh -b         # Show a banner
+    ./assistance.sh -i         # Install this software
 Made by p4p1
 ```
 
@@ -55,4 +57,3 @@ assistance/
 └── src/            # Folder with the scripts to be executed
     └── ....        # add your scripts in this folder
 ```
-
