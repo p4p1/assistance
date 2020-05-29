@@ -25,6 +25,7 @@ echo -n "Please enter your name: "
 read name
 echo "Hello $name"
 ```
+![example_script](https://raw.githubusercontent.com/p4p1/assistance/master/assets/example.png)
 
 ## Usage:
 ``` bash
