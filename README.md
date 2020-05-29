@@ -5,7 +5,7 @@ currently filled in with my configs shell scripts
 ## Installation:
 ``` bash
 git clone git@github.com:p4p1/assistance.git
-cd assistance/ ; chmod +x ./assistance.sh ; ./assistance.sh -i
+cd assistance/ && chmod +x ./assistance.sh && ./assistance.sh -i
 ```
 
 ## Tutorial:
@@ -36,6 +36,8 @@ Usage:
     ./assistance.sh
     ./assistance.sh -b         # Show a banner
     ./assistance.sh -i         # Install this software
+    ./assistance.sh -n [file]  # Add a new script
+    ./assistance.sh -d [file]  # Delete a script
 Made by p4p1
 ```
 

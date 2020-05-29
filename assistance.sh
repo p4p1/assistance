@@ -40,16 +40,36 @@ scripts=($(ls $INSTALL_DIR/src/ 2> /dev/null))
 
 function usage() {
 	echo -e "Description:"
-	echo -e "\tNew to linux? no worries, this tool helps you correct a few bugs"
-	echo -e "\there and there to help you have a stable working environement."
-	echo -e "\tFor more information open up the file and read the source code."
+	echo -e "\tNeed to work with a lot of shell scripts? Assistances is a"
+	echo -e "\tframework to manage your shell scripts in a nice environement."
 	echo -e "Usage:"
 	echo -e "\t$0\t"
 	echo -e "\t$0 -b\t\t# Show a banner"
 	echo -e "\t$0 -i\t\t# Install this software"
+	echo -e "\t$0 -n [file]\t# Add a new script"
+	echo -e "\t$0 -d [file]\t# Delete a script"
 	echo -e "Made by p4p1"
 }
 
+function add_new_script() {
+	if [ ! -f $1 ]; then
+		echo "Error: $1 does not exist"
+		exit 84
+	fi
+	sudo mv $1 $INSTALL_DIR/src/
+	exit
+}
+
+function remove_new_script () {
+	path=$(find $INSTALL_DIR/src -name "${1}")
+
+	if [ ! -f $path ]; then
+		echo "Error: $1 does not exists"
+		exit 84
+	fi
+	sudo rm -rf $path
+	exit
+}
 
 # function for the banner can be shown with -b
 function banner() {
@@ -79,7 +99,7 @@ function installer() {
 echo -e $DIALOG_RC > $HOME/.dialogrc
 
 # Command parser
-while getopts "bi" o; do
+while getopts "bin:d:" o; do
 	case "${o}" in
 		b)
 			banner
@@ -93,6 +113,12 @@ while getopts "bi" o; do
 			sudo cp -r ./data $INSTALL_DIR
 			sudo cp -r ./src $INSTALL_DIR
 			exit
+			;;
+		n)
+			add_new_script ${OPTARG}
+			;;
+		d)
+			remove_new_script ${OPTARG}
 			;;
 		*)
 			usage
